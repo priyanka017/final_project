@@ -15,33 +15,41 @@ Client_secret= '5d78c0178cb9258255982d328f803d536413f567'
 
 
 
-
-
-
 # Create your views here.
 
 def signup_view(request):
+    dict={}
     if request.method == 'GET':
-        # display signup form
         signup_form = SignUpForm()
+        # calling & display signup form
         template_name = 'signup.html'
+
     elif request.method == 'POST':
-        # process the form data
         signup_form = SignUpForm(request.POST)
-        # validate the form data
+        # calling & process the form data
         if signup_form.is_valid():
-            # validation successful
+            # validate the form data
             username = signup_form.cleaned_data['username']
             name = signup_form.cleaned_data['name']
-            email = signup_form.cleaned_data['email']
+            email= signup_form.cleaned_data['email']
             password = signup_form.cleaned_data['password']
-           # new password= signup_form.cleaned_data['password']
-            # save data to db
+            while len(username) < 4:
+                dict['invalid_username']="Usename must be atleast 5 characters"
+                return render(request, "signup.html",dict)
+            while len(password) < 5:
+                dict['invalid_password']="Password must be at least 5 characters"
+                return render(request, "signup.html",dict)
+
             new_user = UserModel(name=name, email=email, password=make_password(password), username=username)
             new_user.save()
+            # save data to db
             template_name = 'success.html'
+            # rendering to success.html after post req
+        else:
+            dict={"key":"Pleas fill the form"}
+            return render(request,'signup.html',dict)
 
-    return render(request, template_name, {'signup_form': signup_form})
+    return render(request,template_name, {'signup_form': signup_form})
 
 
 def login_view(request):
