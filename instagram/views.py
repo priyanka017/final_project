@@ -171,56 +171,71 @@ def post_view(request):
 
 
 # Create your views here.
-
 def signup_view(request):
+    dict={}
     if request.method == 'GET':
-        # display signup form
         signup_form = SignUpForm()
         template_name = 'signup.html'
+
     elif request.method == 'POST':
-        # process the form data
+       # process the form data
         signup_form = SignUpForm(request.POST)
-        # validate the form data
         if signup_form.is_valid():
-            # validation successful
+      # validation successful
             username = signup_form.cleaned_data['username']
             name = signup_form.cleaned_data['name']
             email = signup_form.cleaned_data['email']
             password = signup_form.cleaned_data['password']
-           # new password= signup_form.cleaned_data['password']
-            # save data to db
+            while len(username) < 4:
+                dict['invalid_username']="Usename must be atleast 5 characters"
+                return render(request, "signup.html",dict)
+            while len(password) < 5:
+                dict['invalid_password']="Password must be at least 5 characters"
+                return render(request, "signup.html",dict)
+
             new_user = UserModel(name=name, email=email, password=make_password(password), username=username)
             new_user.save()
+            # save data to db
             template_name = 'success.html'
+        else:
+            dict={"key":"Pleas fill the form"}
+            return render(request,'signup.html',dict)
 
-    return render(request, template_name, {'signup_form': signup_form})
+    return render(request,template_name, {'signup_form': signup_form})
 
 
 def login_view(request):
     response_data = {}
-    if request.method == "POST":
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
+    if request.method == 'POST':
+        login_form = LoginForm(request.POST)
+        if login_form.is_valid():
+            #validation successful
+            username = login_form.cleaned_data['username']
+            password = login_form.cleaned_data['password']
+            #read data from db
             user = UserModel.objects.filter(username=username).first()
-
             if user:
+                #compare password
                 if check_password(password, user.password):
                     token = SessionToken(user=user)
+                    #if password matches session token generated
                     token.create_token()
                     token.save()
-                    response = redirect('feed.html/')
+                    response = redirect('/feed/')
                     response.set_cookie(key='session_token', value=token.session_token)
                     return response
                 else:
-                    response_data['message'] = 'Incorrect Password! Please try again!'
-
+                    return render(request,'login_fail.html')
+            else:
+                return render(request, 'login_fail.html')
+        else:
+            return HttpResponse("Invalid form data.")
     elif request.method == 'GET':
         form = LoginForm()
+        response_data['form'] = form
 
-    response_data['form'] = form
     return render(request, 'login.html', response_data)
+
 
 def feed_view(request):
     return render(request, 'feed.html')
