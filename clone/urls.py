@@ -15,8 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
+
+
 #from instagram import views
-from views  import signup_view, login_view, post_view, feed_view, like_view, comment_view
+from views import signup_view, login_view, post_view, feed_view, like_view, comment_view
 
 
 urlpatterns = [
