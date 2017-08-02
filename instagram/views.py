@@ -51,36 +51,42 @@ def signup_view(request):
 
     return render(request,template_name, {'signup_form': signup_form})
 
-
 def login_view(request):
     response_data = {}
-    if request.method == "POST":
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
+    # if request.method == 'GET':
+    if request.method == 'POST':
+        login_form = LoginForm(request.POST)
+        if login_form.is_valid():
+            #validation successful
+            username = login_form.cleaned_data['username']
+            password = login_form.cleaned_data['password']
+            #read data from db
             user = UserModel.objects.filter(username=username).first()
-
             if user:
+                #compare password
                 if check_password(password, user.password):
                     token = SessionToken(user=user)
+                    #if password matches session token generaed
                     token.create_token()
                     token.save()
-                    response = redirect('feed.html/')
+                    response = redirect('/feed/')
                     response.set_cookie(key='session_token', value=token.session_token)
                     return response
                 else:
-                    response_data['message'] = 'Incorrect Password! Please try again!'
-
+                    return render(request,'login_fail.html')
+            else:
+                return render(request, 'login_fail.html')
+        else:
+            return HttpResponse("Invalid form data.")
     elif request.method == 'GET':
         form = LoginForm()
+        response_data['form'] = form
 
-    response_data['form'] = form
     return render(request, 'login.html', response_data)
+
 
 def feed_view(request):
     return render(request, 'feed.html')
-
 #For validating the session
 def check_validation(request):
     if request.COOKIES.get('session_token'):
@@ -93,7 +99,6 @@ def check_validation(request):
 
 def post_view(request):
     user = check_validation(request)
-
     if user:
         if request.method == 'POST':
             form = PostForm(request.POST, request.FILES)
@@ -102,15 +107,11 @@ def post_view(request):
                 caption = form.cleaned_data.get('caption')
                 post = PostModel(user=user, image=image, caption=caption)
                 post.save()
-
                 path = str(BASE_DIR + post.image.url)
-
                 client = ImgurClient(YOUR_CLIENT_ID, YOUR_CLIENT_SECRET)
                 post.image_url = client.upload_from_path(path,anon=True)['link']
                 post.save()
-
                 return redirect('/feed/')
-
         else:
             form = PostForm()
         return render(request, 'post.html', {'form' : form})
