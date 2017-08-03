@@ -81,8 +81,6 @@ def login_view(request):
     return render(request, 'login.html', response_data)
 
 
-def feed_view(request):
-    return render(request, 'feed.html')
 #For validating the session
 def check_validation(request):
     if request.COOKIES.get('session_token'):
@@ -93,26 +91,32 @@ def check_validation(request):
         return None
 
 
-def post_view(request):
-    user = check_validation(request)
-    if user:
-        if request.method == 'POST':
+    def post_view(request):
+        user = check_validation(request)
+        if user == None:
+            return redirect('/login/')
+        elif request.method == 'GET':
+            post_form = PostForm()
+            return render(request, 'post.html', {'post_form': post_form})
+        elif request.method == "POST":
             form = PostForm(request.POST, request.FILES)
             if form.is_valid():
                 image = form.cleaned_data.get('image')
                 caption = form.cleaned_data.get('caption')
                 post = PostModel(user=user, image=image, caption=caption)
                 post.save()
-                path = str(BASE_DIR + post.image.url)
-                client = ImgurClient(YOUR_CLIENT_ID, YOUR_CLIENT_SECRET)
-                post.image_url = client.upload_from_path(path,anon=True)['link']
+                client = ImgurClient('13aab932636aa80', '5d78c0178cb9258255982d328f803d536413f567')
+                path = str(BASE_DIR + "\\" + post.image.url)
+                post.image_url = client.upload_from_path(path, anon=True)['link']
                 post.save()
-                return redirect('/feed/')
+                return redirect("/feed/")
+            else:
+                return HttpResponse("Form data is not valid.")
         else:
-            form = PostForm()
-        return render(request, 'post.html', {'form' : form})
-    else:
-        return redirect('/login/')
+            return HttpResponse("Invalid request.")
+
+
+
 
     def feed_view(request):
         user = check_validation(request)
@@ -171,8 +175,6 @@ def post_view(request):
                     return session.user
         else:
             return None
-
-
 
 
 # Create your views here.
@@ -244,16 +246,21 @@ def login_view(request):
 
 
 def feed_view(request):
-    return render(request, 'feed.html')
+        user = check_validation(request)
+        if user and request.method == 'GET':
+            posts = PostModel.objects.all().order_by('created_on')
 
-#For validating the session
-def check_validation(request):
-    if request.COOKIES.get('session_token'):
-        session = SessionToken.objects.filter(session_token=request.COOKIES.get('session_token')).first()
-        if session:
-           return session.user
-    else:
-        return None
+            for post in posts:
+                existing_like = LikeModel.objects.filter(post_id=post.id, user=user).first()
+                if existing_like:
+                    post.has_liked = True
+
+            return render(request, 'feed.html', {'posts': posts})
+        else:
+            return redirect('/login/')
+
+
+
 
     def post_view(request):
         user = check_validation(request)
@@ -296,6 +303,7 @@ def check_validation(request):
         else:
             return redirect('/login/')
 
+
     def like_view(request):
         user = check_validation(request)
         if user and request.method == 'POST':
@@ -313,6 +321,7 @@ def check_validation(request):
         else:
             return redirect('/login/')
 
+
     def comment_view(request):
         user = check_validation(request)
         if user and request.method == 'POST':
@@ -328,6 +337,7 @@ def check_validation(request):
                 return redirect('/feed/')
         else:
             return redirect('/login')
+
 
     # For validating the session
     def check_validation(request):
