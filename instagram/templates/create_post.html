@@ -1,30 +1,26 @@
 
-
-<!DOCTYPE html>
+{% load static  %}
+<!Doctype html>
 <html>
-	<head>
-		<title>Signup</title>
+   <head>
+      <title>Post</title>
 		<meta charset="utf-8">
     		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-                <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="{% static "css/bootstrap.css" %}" rel="stylesheet">
+
+		<meta name="viewport" content="width=device-width">
+
+		<link href="{% static "css/bootstrap.css" %}" rel="stylesheet">
 		<link rel="stylesheet" type="text/css" href="{% static "css/site.css" %}" />
 
-
-		<!--Bootstrap-->
-		<link href="{% static "css/bootstrap.css" %}" rel="stylesheet">
-        <link href="{% static "img/13319780_1733559440191928_1754099596391572995_n.jpg" %}" rel="stylesheet">
-
-      <!--<link href="" background: url("/static/img/C:\Users\Jai\PycharmProjects\Final-Project\instagram\static\images\13319780_1733559440191928_1754099596391572995_n.jpg") 50% 0 no-repeat fixed;-->
-     <!--color: white;-->
-     <!--height: 650px;-->
-     <!--padding: 100px 0 0 0;-->
-
-   <style>
+       <style>
+			body {
+    background-image: url("E:\download (1).jpg");
+    background-repeat: no-repeat;
+}
+  <style>
        h1
        {
-            background-color:cyan;
+            background-color:#ffff;
             width:50%;
             font:vani;
             size:90px;
@@ -50,11 +46,11 @@
             float:center;
             font:Times new roman;
             font-size:20px;
-            background-color:cyan;
+            background-color:yellow;
             color:grey;
        }
        a:link,a:visited {
-       background-color:blue;
+       background-color:gray;
        display:inline block;
             text-decoration:none;
        border_radius:5px;
@@ -78,7 +74,7 @@
              align:center;
              }
         .flex-item{
-            background-color :gray;
+            background-color : cyan;
             width: 100px;
                height: 500px;
             margin:10px;
@@ -87,26 +83,39 @@
 body {
     width: 100%;
     height: 100%;
-    background-image: url("{% static "images/13319780_1733559440191928_1754099596391572995_n.jpg" %}" style="width:100%;height:50%");
-    background-color:light yellow	;
+    background-color:gray;
     background-size: 100% 100%;
 }
-</style>
-        <body>
+		</style>
+   </head>
+   <body>
+   <p align="right">&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="/logout/"class="btn btn-info">Log out</a>
+	</p>
     <div class="row">
 		<div class="col-sm-4 col-sm-offset-4">
 			<br><br>
 			<table align="center"width="80%"height="100%">
-				<tbody bgcolor="gray"width="40%"height="50%"border="1px solid grey"><td align="center">
+				<tbody bgcolor="cyan"width="40%"height="50%"border="1px solid grey"><td align="center">
 
-			<h1><p style="font-family:Monotype Corsiva; color:white; font-size:50px;">Instagram Clone</p></h1>
-	                <h3><p style="font-family:Monotype Corsiva; color:white; font-size:35px;"> Successfully signed up! Please continue to login!
-</p></h3>
-	      <
-    </body>
+			<h3><p style="font-family:Monotype Corsiva; color:gray; font-size:50px;">Instagram Clone</p></h3>
+	                <h1><p style="font-family:Monotype Corsiva; color:#FF1493; font-size:35px;">Create Your Post</p></h1>
 
+   <form action="" method ="POST" enctype="multipart/form-data"><br><br>
+		   {% csrf_token %}
+		   <h4 color="green">Post your image:-</h4>
+		   <input type="file"class="btn btn-default" name="image" value="{{ image }}"><br><br>
+		   <input type="text" name="caption" value="{{ caption }}"><br><br>
+	       <input type="submit"class="btn btn-success" name="add a picture" value = "POST">
+     </form>
+</a></td>
 
+       </tbody></table>
 
-
-
-
+     <!--Javascript files-->
+		<!--Jquery library-->
+		<script src={% static "js/jquery-3.2.1.js" %}"></script>
+		<!--Bootstrap js Library-->
+		<script src="{% static "js/bootstrap.js" %}"></script>
+</body>
+</html>

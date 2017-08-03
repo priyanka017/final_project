@@ -1,57 +1,131 @@
-{% load staticfiles %}
-
+{% load static  %}
 <!DOCTYPE html>
-<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+	<style>
+			body {
+    background: url("E:\download (1).jpg");
+    background-repeat: no-repeat;
+}
+a:link,a:visited {
+       background-color:yellow;
+       display:inline block;
+            text-decoration:none;
+       border_radius:5px;
+             text-align:center;
+       padding: 8px 15px;
+       color:white;
+               }
+               }
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: blue;
+}
+li {
+    float: left;
+}
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+li a:hover:not(.active) {
+    background-color:yellow;
+}
+.active {
+    background-color: #4CAF50;
+}
+		</style>
 </head>
-<body>
-    <form method="post" action="/post/">
-        {% csrf_token %}
-        <input type="submit" class="btn-default btn" value="Create Post">
-    </form>
+
+<body bgcolor="green">
+<!--<ul>-->
+  <!--<li><a href="#home">Home</a></li>-->
+  <!--<li><a href="#news">News</a></li>-->
+  <!--<li><a href="#contact">Contact</a></li>-->
+  <!--<li style="float:right"><a class="active" href="#about">About</a></li>-->
+<!--</ul>--><div><br><br>
+<a href="/post/"class><b><i>Create Post</i></b></a>&nbsp;&nbsp;&nbsp;
+	<a href="/logout/"><b><i>Log Out</i></b>
+	</a>
+<p valign="top"align="left"bgcolor="cyan"><h1 style="font-family:Monotype Corsiva;align:center; color:cyan; font-size:50px;align:center;">Instagram Clone</h1>
+
+	</p></div>
 
 
-    {% for post in posts %}
+<table height="100%"width="100%"bgcolor="cyan">
+	<tbody align="center"width="50%">
+	<td align="center"border="3px solid red">
 
 
-        <h3> Posted by: {{ post.user.username }} </h3>
-        <p>[{{ post.created_on }}]</p>
-        <img style="display:inline-block; width:350px; height:300px;"
-             src="{{ post.image_url }}" /><br>
-        <span  style="display:inline-block;">{{ post.caption }}</span><br/><br/>
-        <div style="display:inline-block">
-            {{ post.like_count }} likes this
-        </div>
-        <div style="display:inline-block">
-            <form method="POST" action="/like/">
-              {% csrf_token %}
-              <input type="hidden" name="post" value="{{ post.id }}" />
-                {% if post.has_liked %}
-                <input type="submit" class="btn btn-default" value="Unlike">
-                {% else %}
-                <input type="submit" class="btn btn-default" value="Like">
-                {% endif %}
-            </form>
-        </div>
+<div >
 
-        <div>
-            <form method="POST" action="/comment/">
+	{% for post in posts %}
+
+	<h2 style="color:#FF1493;">Posted by : {{ post.user.username}}</h2>
+	<p>[{{ post.created_on }}]</p>
+
+	<img style="display:inline-block;width:350px;height:300px;"src="{{ post.image_url}}">
+	<!--<span  style="display:inline-block;">{{ post.caption }}</span><br/><br/>-->
+
+	<br>
+	<div style="display:inline-block;color:red">
+		{{ post.like_count }} likes this post.
+	</div>
+
+	<div id ="caption">
+		Caption: {{ post.caption }}
+		</br>
+	<!--</div>-->
+	<div style="display:inline-block;color:#FF1493;">
+	<form action = "/like/" method="POST">
+		{% csrf_token %}
+		<input type="hidden" name="post" value="{{ post.id }}">
+	 	{% if post.has_liked %}
+		<input type="submit" value="Unlike"class="btn btn-success">
+		{% else %}
+		<input  type="submit"class="btn btn-success" value="Like">
+		{% endif %}
+	</form>
+	</div>
+
+	<h4> {{ post.check_likes }}</h4>
+	<div>
+	<form method="POST" action="/comment/">
                 {% csrf_token %}
                 <input type="hidden" name="post" value="{{ post.id }}" />
-                <input type="text" name="comment_text" id="comment_text" placeholder="Make a comment.." value="{{ comment_text }}">
+                <input type="text" name="comment_text" id="comment_text" placeholder="Make a comment.." value="{{ comment_text }}"/>
                 {{ comment_text }}
-                <input type="submit" class="btn-default btn" value="Comment">
-            </form>
-        </div>
+                <input type="submit" class="btn btn-success" value="Comment">
+	</form>
+	</div>
+	<div>
+			    {% for comment in post.comments %}
+	            <p><b>{{ comment.user.username }} [{{ comment.created_on }}]</b> ({{ comment.comment_text }})</p>
+			    {% endfor %}
+	</div>
+		{% endfor %}
 
-        <div>
-            {% for comment in post.comments %}
-                <p><b>{{ comment.user.username }} [{{ comment.created_on }}]:</b> {{ comment.comment_text }}</p>
-            {% endfor %}
-        </div>
 
-    {% endfor %}
+
+
+
+
+
+	</div></div></td></tbody>
+</table><div><br><br>
+<a href="/post/"class><b><i>Create Post</i></b></a>&nbsp;&nbsp;&nbsp;
+	<a href="/logout/"><b><i>Log Out</i></b>
+	</a>
+</div>
+
+
+<script src={% static "js/jquery-3.2.1.js" %}"></script>
+		<!--Bootstrap js Library-->
+		<script src="{% static "js/bootstrap.js" %}"></script>
 </body>
 </html>

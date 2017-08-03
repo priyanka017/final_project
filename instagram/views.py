@@ -13,8 +13,6 @@ client_id= '13aab932636aa80'
 Client_secret= '5d78c0178cb9258255982d328f803d536413f567'
 
 
-
-
 # Create your views here.
 
 def signup_view(request):
@@ -48,7 +46,6 @@ def signup_view(request):
         else:
             dict={"key":"Pleas fill the form"}
             return render(request,'signup.html',dict)
-
     return render(request,template_name, {'signup_form': signup_form})
 
 def login_view(request):
@@ -81,7 +78,6 @@ def login_view(request):
     elif request.method == 'GET':
         form = LoginForm()
         response_data['form'] = form
-
     return render(request, 'login.html', response_data)
 
 
@@ -121,7 +117,6 @@ def post_view(request):
     def feed_view(request):
         user = check_validation(request)
         if user and request.method == 'GET' :
-
             posts = PostModel.objects.all().order_by('-created_on')
 
             for post in posts:
@@ -131,7 +126,6 @@ def post_view(request):
 
             return render(request, 'feed.html', {'posts': posts})
         else:
-
             return redirect('/login/')
 
 
@@ -147,6 +141,8 @@ def post_view(request):
                 else:
                     existing_like.delete()
                 return redirect('/feed/')
+            else:
+                HttpResponse("form data is not valid")
         else:
             return redirect('/login/')
 
@@ -182,15 +178,16 @@ def post_view(request):
 # Create your views here.
 def signup_view(request):
     dict={}
+
     if request.method == 'GET':
         signup_form = SignUpForm()
         template_name = 'signup.html'
 
     elif request.method == 'POST':
-       # process the form data
+         # process the form data
         signup_form = SignUpForm(request.POST)
         if signup_form.is_valid():
-      # validation successful
+         # validation successful
             username = signup_form.cleaned_data['username']
             name = signup_form.cleaned_data['name']
             email = signup_form.cleaned_data['email']
@@ -285,25 +282,9 @@ def check_validation(request):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     def feed_view(request):
         user = check_validation(request)
-        if user:
-
+        if user and request.method == 'GET':
             posts = PostModel.objects.all().order_by('created_on')
 
             for post in posts:
@@ -313,7 +294,6 @@ def check_validation(request):
 
             return render(request, 'feed.html', {'posts': posts})
         else:
-
             return redirect('/login/')
 
     def like_view(request):
